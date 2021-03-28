@@ -42,12 +42,14 @@ program
   .version(version)
   .option('-f, --find [symbol]', 'Find specific coin data with coin symbol (can be a comma seperated list)', list, [])
   .option('-t, --top [index]', 'Show the top coins ranked from 1 - [index] according to the market cap', validation.validateNumber, DEFAULT_TOP)
+  .option('-v, --verbose', 'Get more information it is useful for debugging coinmon', null, false)
   .parse(process.argv)
 
 console.log('\n')
 
 const find = program.find
 const top = find.length > 0 ? MAX_TOP : getValidTop(program.top)
+const verbose = program.verbose || false;
 
 // handle table
 const defaultHeader = [
@@ -178,7 +180,10 @@ axios.get(sourceUrl)
     }
   })
   .catch(function (error) {
-    console.log('error', error)
     spinner.stop()
-    console.error('Coinmon is not working now. Please try again later.'.red)
+    if (verbose) {
+      console.log('error', error)
+    } else {
+      console.error('Coinmon is not working now. Please try again later.'.red)
+    }
   })
